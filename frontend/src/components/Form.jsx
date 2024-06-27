@@ -1,9 +1,10 @@
 import { useState } from "react";
 import api from "../api";
 import { useNavigate } from "react-router-dom";
-import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
+import { ACCESS_TOKEN, REFRESH_TOKEN, USER_ROLE, ROLES } from "../constants";
 import "../styles/Form.css"
 import LoadingIndicator from "./LoadingIndicator";
+import DropdownMenu from "./DropdownMenu";
 
 function Form({ route, method }) {
     const [username, setUsername] = useState("");
@@ -22,6 +23,7 @@ function Form({ route, method }) {
             if (method === "login") {
                 localStorage.setItem(ACCESS_TOKEN, res.data.access);
                 localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
+                localStorage.setItem(USER_ROLE, res.data.user.role);
                 navigate("/")
             } else {
                 navigate("/login")
@@ -33,29 +35,62 @@ function Form({ route, method }) {
         }
     };
 
-    return (
-        <form onSubmit={handleSubmit} className="form-container">
-            <h1>{name}</h1>
-            <input
-                className="form-input"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Username"
-            />
-            <input
-                className="form-input"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-            />
-            {loading && <LoadingIndicator />}
-            <button className="form-button" type="submit">
-                {name}
-            </button>
-        </form>
-    );
+    if (name == "Register") {
+        const [role, setSelectedRole] = useState("");
+        return (
+            <form onSubmit={handleSubmit} className="form-container">
+                <h1>{name}</h1>
+                <input
+                    className="form-input"
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Username"
+                />
+                <input
+                    className="form-input"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Password"
+                />
+                {<DropdownMenu 
+                option = {role} 
+                options = {ROLES} 
+                setSelection = {setSelectedRole}
+                checkmark = {true}
+                />}
+                {loading && <LoadingIndicator />}
+                <button className="form-button" type="submit">
+                    {name}
+                </button>
+            </form>
+        );
+    } else {
+        return (
+            <form onSubmit={handleSubmit} className="form-container">
+                <h1>{name}</h1>
+                <input
+                    className="form-input"
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Username"
+                />
+                <input
+                    className="form-input"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Password"
+                />
+                {loading && <LoadingIndicator />}
+                <button className="form-button" type="submit">
+                    {name}
+                </button>
+            </form>
+        );
+    }
 }
 
 export default Form
